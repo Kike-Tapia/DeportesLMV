@@ -1,36 +1,27 @@
 import "react-native-gesture-handler";
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet, Image } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  ImageBackground
+} from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Ionicons } from '@expo/vector-icons';
 
 // --- Productos con imagen ---
 const productos = [
-  {
-    id: "1",
-    nombre: "Balón de Fútbol",
-    precio: 300,
-    imagen: "https://m.media-amazon.com/images/I/719sW7b+seL._AC_SX679_.jpg",
-  },
-  {
-    id: "2",
-    nombre: "Balón de Basketball",
-    precio: 350,
-    imagen: "https://www.wilsonstore.mx/cdn/shop/files/d2485ee5f6.webp?v=1756418557&width=800",
-  },
-  {
-    id: "3",
-    nombre: "Balón de Volleyball",
-    precio: 280,
-    imagen: "https://m.media-amazon.com/images/I/618t7YGFBEL._AC_SX679_.jpg",
-  },
-  {
-    id: "4",
-    nombre: "Pelota de Baseball",
-    precio: 200,
-    imagen: "https://m.media-amazon.com/images/I/61-AEGaf8eL._AC_SX679_.jpg",
-  },
+  { id: "1", nombre: "Balón de Fútbol", precio: 300, imagen: "https://m.media-amazon.com/images/I/719sW7b+seL._AC_SX679_.jpg" },
+  { id: "2", nombre: "Balón de Basketball", precio: 350, imagen: "https://www.wilsonstore.mx/cdn/shop/files/d2485ee5f6.webp?v=1756418557&width=800" },
+  { id: "3", nombre: "Balón de Volleyball", precio: 280, imagen: "https://m.media-amazon.com/images/I/618t7YGFBEL._AC_SX679_.jpg" },
+  { id: "4", nombre: "Balón de Baseball", precio: 200, imagen: "https://m.media-amazon.com/images/I/61-AEGaf8eL._AC_SX679_.jpg" },
 ];
 
 // --- Login Screen ---
@@ -47,23 +38,29 @@ function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>🏀 Deportes App</Text>
-      <TextInput
-        placeholder="Usuario"
-        style={styles.input}
-        value={username}
-        onChangeText={setUsername}
-      />
-      <TextInput
-        placeholder="Contraseña"
-        secureTextEntry
-        style={styles.input}
-        value={password}
-        onChangeText={setPassword}
-      />
-      <Button title="Ingresar" onPress={handleLogin} />
-    </View>
+    <ImageBackground
+      source={{ uri: "https://i.pinimg.com/originals/14/dc/ec/14dcecb996719d7d569ff6589086572f.jpg" }} // imagen de fondo
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay}>
+        <Text style={styles.title}>🏀 Deportes App</Text>
+        <TextInput
+          placeholder="Usuario"
+          style={styles.input}
+          value={username}
+          onChangeText={setUsername}
+        />
+        <TextInput
+          placeholder="Contraseña"
+          secureTextEntry
+          style={styles.input}
+          value={password}
+          onChangeText={setPassword}
+        />
+        <Button title="Ingresar" onPress={handleLogin} />
+      </View>
+    </ImageBackground>
   );
 }
 
@@ -72,27 +69,29 @@ function ProductosScreen({ route }) {
   const { addToCart } = route.params;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Productos Deportivos</Text>
-      <FlatList
-        data={productos}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Image
-              source={{ uri: item.imagen }}
-              style={styles.image}
-              resizeMode="contain"
-            />
-            <Text style={styles.product}>{item.nombre}</Text>
-            <Text style={styles.price}>${item.precio}</Text>
-            <TouchableOpacity style={styles.buttonAdd} onPress={() => addToCart(item)}>
-              <Text style={styles.buttonText}>Agregar al carrito</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      />
-    </View>
+    <ImageBackground
+      source={{ uri: "https://www.freepik.es/foto-gratis/pelotas-diferentes-deportes_932028.htm#fromView=keyword&page=1&position=1&uuid=594cc9c0-98a7-4bde-889d-4e2afa07d1e5&query=Fondo+de+pantalla+deportes" }} // fondo para productos
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay}>
+        <Text style={styles.title}>Productos Deportivos</Text>
+        <FlatList
+          data={productos}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <Image source={{ uri: item.imagen }} style={styles.image} resizeMode="contain" />
+              <Text style={styles.product}>{item.nombre}</Text>
+              <Text style={styles.price}>${item.precio}</Text>
+              <TouchableOpacity style={styles.buttonAdd} onPress={() => addToCart(item)}>
+                <Text style={styles.buttonText}>Agregar al carrito</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        />
+      </View>
+    </ImageBackground>
   );
 }
 
@@ -149,7 +148,27 @@ function MainTabs({ route }) {
   };
 
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarIcon: ({ color, size }) => {
+          let iconName;
+          if (route.name === 'Productos') iconName = 'basketball-outline';
+          else if (route.name === 'Carrito') iconName = 'cart-outline';
+          else if (route.name === 'Perfil') iconName = 'person-circle-outline';
+          return <Ionicons name={iconName} size={size + 8} color={color} />; // íconos más grandes
+        },
+        tabBarActiveTintColor: '#007bff',
+        tabBarInactiveTintColor: 'gray',
+        tabBarStyle: {
+          backgroundColor: '#f5f5f5',
+          height: 80,        // más alta para íconos grandes
+          paddingBottom: 15,
+          paddingTop: 5,
+        },
+        tabBarLabelStyle: { fontSize: 14, fontWeight: 'bold', marginBottom: 5 },
+      })}
+    >
       <Tab.Screen name="Productos" component={ProductosScreen} initialParams={{ addToCart }} />
       <Tab.Screen name="Carrito" component={CarritoScreen} initialParams={{ cart }} />
       <Tab.Screen name="Perfil" component={PerfilScreen} initialParams={{ user }} />
@@ -171,9 +190,11 @@ export default function App() {
 
 // --- Estilos ---
 const styles = StyleSheet.create({
+  background: { flex: 1 },
+  overlay: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20, backgroundColor: "rgba(245,245,245,0.85)" },
   container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20, backgroundColor: "#f5f5f5" },
   title: { fontSize: 24, fontWeight: "bold", marginBottom: 15 },
-  input: { borderWidth: 1, borderColor: "#ccc", padding: 10, marginBottom: 10, width: "80%", borderRadius: 8, backgroundColor: "#fff" },
+  input: { backgroundColor: "rgba(255,255,255,0.9)", borderWidth: 1, borderColor: "#ccc", padding: 10, marginBottom: 10, width: "80%", borderRadius: 8 },
   card: { backgroundColor: "#fff", width: 250, borderRadius: 10, alignItems: "center", padding: 15, marginVertical: 10, elevation: 3 },
   image: { width: 150, height: 100, marginBottom: 10 },
   product: { fontSize: 18, marginBottom: 5 },
